@@ -12,13 +12,14 @@ import { Earthquake } from '@/lib/types';
 import { formatDistanceToNow } from 'date-fns';
 import { Activity } from 'lucide-react';
 import { useState } from 'react';
+import { Pagination } from '@/components/ui/pagination';
 
 interface RecentEarthquakesProps {
   earthquakes: Earthquake[];
   onEarthquakeClick?: (earthquake: Earthquake) => void;
 }
 
-const ITEMS_PER_PAGE = 5; // Number of items to display per page
+const ITEMS_PER_PAGE = 5;
 
 export function RecentEarthquakes({ earthquakes, onEarthquakeClick }: RecentEarthquakesProps) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -74,48 +75,12 @@ export function RecentEarthquakes({ earthquakes, onEarthquakeClick }: RecentEart
         </TableBody>
       </Table>
 
-      {/* Pagination Controls */}
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50 hover:bg-gray-400 transition"
-        >
-          Previous
-        </button>
-
-        <div className="flex space-x-2">
-          {currentPage > 1 && (
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition"
-            >
-              {currentPage - 1}
-            </button>
-          )}
-          <button
-            className="px-3 py-1 rounded bg-blue-500 text-white"
-          >
-            {currentPage}
-          </button>
-          {currentPage < totalPages && (
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition"
-            >
-              {currentPage + 1}
-            </button>
-          )}
-        </div>
-
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50 hover:bg-gray-400 transition"
-        >
-          Next
-        </button>
-      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        siblingCount={1}
+      />
     </div>
   );
 } 
