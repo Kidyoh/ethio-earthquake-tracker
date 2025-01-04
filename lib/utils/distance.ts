@@ -17,4 +17,16 @@ export function calculateDistance(
 
 function deg2rad(deg: number): number {
   return deg * (Math.PI / 180);
+}
+
+export function sortByDistance(
+  services: { location: { lat: number; lng: number } }[],
+  lat: number,
+  lng: number
+) {
+  return services.sort((a, b) => {
+    const distanceA = calculateDistance(lat, lng, a.location.lat, a.location.lng);
+    const distanceB = calculateDistance(lat, lng, b.location.lat, b.location.lng);
+    return distanceA - distanceB;
+  });
 } 

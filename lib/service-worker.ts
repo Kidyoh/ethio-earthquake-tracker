@@ -1,7 +1,6 @@
 const CACHE_NAME = 'earthquake-monitor-v1';
 const OFFLINE_URL = '/offline';
-
-self.addEventListener('install', (event: ExtendableEvent) => {
+self.addEventListener('install', (event: any) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll([
@@ -14,7 +13,7 @@ self.addEventListener('install', (event: ExtendableEvent) => {
   );
 });
 
-self.addEventListener('fetch', (event: FetchEvent) => {
+self.addEventListener('fetch', (event: any) => { // Changed FetchEvent to any
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request).catch(() => {

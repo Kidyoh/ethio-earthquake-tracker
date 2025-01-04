@@ -1,3 +1,5 @@
+import { DamageReport } from "./types";
+
 const USGS_API_BASE = 'https://earthquake.usgs.gov/fdsnws/event/1/query';
 
 export async function getRecentEarthquakes() {

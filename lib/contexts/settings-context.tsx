@@ -39,19 +39,19 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   }, [settings]);
 
   const setNotifications = (enabled: boolean) => 
-    setSettings(prev => ({ ...prev, notifications: enabled }));
+    setSettings((prev: any) => ({ ...prev, notifications: enabled }));
   
   const setSound = (enabled: boolean) => 
-    setSettings(prev => ({ ...prev, sound: enabled }));
+    setSettings((prev: any) => ({ ...prev, sound: enabled }));
   
   const setMinMagnitude = (magnitude: number) => 
-    setSettings(prev => ({ ...prev, minMagnitude: magnitude }));
+    setSettings((prev: any) => ({ ...prev, minMagnitude: magnitude }));
   
   const setRadius = (radius: number) => 
-    setSettings(prev => ({ ...prev, radius }));
+    setSettings((prev: any) => ({ ...prev, radius }));
   
   const setLocation = (location: { lat: number; lng: number } | null) => 
-    setSettings(prev => ({ ...prev, location }));
+    setSettings((prev: any) => ({ ...prev, location }));
 
   return (
     <SettingsContext.Provider value={{
