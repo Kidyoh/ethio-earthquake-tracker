@@ -18,35 +18,32 @@ export function AlertLevel({ earthquakes }: AlertLevelProps) {
 
     if (highMagnitudeQuakes.length > 0) {
       return {
-        level: 'high',
+        level: 'destructive' as 'destructive',
         title: 'High Alert',
         description: 'Significant seismic activity detected. Stay alert and prepared.',
         icon: AlertTriangle,
-        color: 'destructive',
       };
     }
 
     if (moderateQuakes.length > 2) {
       return {
-        level: 'moderate',
+        level: 'default' as 'default',
         title: 'Moderate Alert',
         description: 'Multiple moderate earthquakes detected. Monitor situation.',
         icon: AlertCircle,
-        color: 'warning',
       };
     }
 
     return {
-      level: 'low',
+      level: 'default' as 'default',
       title: 'Normal Activity',
       description: 'No significant seismic activity detected.',
       icon: CheckCircle,
-      color: 'default',
     };
   }, [earthquakes]);
 
   return (
-    <Alert variant={alertStatus.color}>
+    <Alert variant={alertStatus.level}>
       <alertStatus.icon className="h-4 w-4" />
       <AlertTitle>{alertStatus.title}</AlertTitle>
       <AlertDescription>
