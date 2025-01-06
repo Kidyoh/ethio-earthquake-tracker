@@ -1,6 +1,7 @@
 'use client';
 
 import { EducationalResources } from '@/components/education/resources';
+import { ComprehensiveResources } from '@/components/education/comprehensive-resources';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, AlertTriangle, Info } from 'lucide-react';
 

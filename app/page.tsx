@@ -15,6 +15,8 @@ import { ReportForm } from '@/components/community/report-form';
 import { useSettings } from '@/lib/contexts/settings-context';
 import { PredictionAnalysis } from '@/components/analysis/prediction';
 import { SafetyTips } from '@/components/safety/safety-tips';
+import { PredictionModel } from '@/components/analysis/prediction-model';
+import { RiskHeatMap } from '@/components/analysis/risk-heatmap';
 
 export default function Home() {
   const [earthquakes, setEarthquakes] = useState<Earthquake[]>([]);
@@ -97,6 +99,11 @@ export default function Home() {
             <PredictionAnalysis earthquakes={earthquakes} />
             <SafetyTips />
 
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <PredictionModel earthquakes={earthquakes} />
+        <RiskHeatMap earthquakes={earthquakes} />
       </div>
     </div>
   );

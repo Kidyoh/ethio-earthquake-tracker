@@ -1,6 +1,8 @@
 import { createContext, useContext } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { Earthquake } from './types';
+import { sendEarthquakeNotification } from './notifications';
+import { useGlobalSettings } from './stores/global-settings';
 
 const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'wss://your-earthquake-websocket-server';
 
@@ -9,8 +11,14 @@ export class WebSocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private listeners: ((data: any) => void)[] = [];
+  private settings: any;
 
-  constructor(private url: string = WS_URL) {}
+  constructor(
+    private url: string = WS_URL, 
+    private getSettings: () => any
+  ) {
+    this.settings = this.getSettings();
+  }
 
   connect() {
     try {
@@ -53,13 +61,8 @@ export class WebSocketService {
   }
 
   private showNotification(data: Earthquake) {
-    if (Notification.permission === 'granted') {
-      toast({
-        title: 'New Earthquake Detected',
-        description: `Magnitude ${data.magnitude} earthquake at ${data.location.place}`,
-        variant: 'destructive',
-      });
-    }
+    const settings = useGlobalSettings.getState();
+    sendEarthquakeNotification(data, settings);
   }
 
   addListener(callback: (data: any) => void) {
