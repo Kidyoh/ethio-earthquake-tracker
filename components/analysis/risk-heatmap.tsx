@@ -1,8 +1,10 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+import { useClientSide } from '@/hooks/use-client-side';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Earthquake } from '@/lib/types';
 import { 
@@ -18,11 +20,7 @@ import {
   Star
 } from 'lucide-react';
 import { calculateDistance } from '@/lib/utils/distance';
-import { 
-  FeatureCollection, 
-  Point, 
-  Feature 
-} from 'geojson';
+import type { FeatureCollection, Point, Feature, GeoJsonProperties } from 'geojson';
 import L from 'leaflet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -172,9 +170,26 @@ const ETHIOPIAN_GEOLOGICAL_REGIONS = [
   }
 ];
 
+// Dynamically import Leaflet components
+const MapContainer = dynamic(
+  () => import('react-leaflet').then(mod => mod.MapContainer),
+  { ssr: false }
+);
+
+const TileLayer = dynamic(
+  () => import('react-leaflet').then(mod => mod.TileLayer),
+  { ssr: false }
+);
+
+const GeoJSON = dynamic(
+  () => import('react-leaflet').then(mod => mod.GeoJSON),
+  { ssr: false }
+);
+
 export function RiskHeatMap({ earthquakes }: { earthquakes: Earthquake[] }) {
   const [selectedRegion, setSelectedRegion] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'risk' | 'details'>('risk');
+  const isReady = useClientSide(false);
 
   const regionRiskData = useMemo(() => 
     ETHIOPIAN_GEOLOGICAL_REGIONS.map(region => {
@@ -219,20 +234,24 @@ export function RiskHeatMap({ earthquakes }: { earthquakes: Earthquake[] }) {
     [earthquakes]
   );
 
-  const ethiopiaRiskZones: FeatureCollection<Point> = {
-    type: 'FeatureCollection',
+  const ethiopiaRiskZones = useMemo<FeatureCollection<Point>>(() => ({
+    type: 'FeatureCollection' as const,
     features: regionRiskData.map(region => ({
-      type: 'Feature',
+      type: 'Feature' as const,
       properties: { 
         ...region,
         description: `Risk Level: ${region.riskLevel.toUpperCase()}`
       },
       geometry: {
-        type: 'Point',
+        type: 'Point' as const,
         coordinates: [region.coordinates[1], region.coordinates[0]]
       }
-    } as Feature<Point>))
-  };
+    }))
+  }), [regionRiskData]);
+
+  if (!isReady) {
+    return <LoadingSpinner />;
+  }
 
   const getRegionStyle = (feature: Feature) => {
     const properties = feature.properties as any;

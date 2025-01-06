@@ -1,6 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { useClientSide } from '@/hooks/use-client-side';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { EarthquakeStats, Earthquake } from '@/lib/types';
 import { RecentEarthquakes } from '@/components/recent-earthquakes';
@@ -16,9 +19,26 @@ import { useSettings } from '@/lib/contexts/settings-context';
 import { PredictionAnalysis } from '@/components/analysis/prediction';
 import { SafetyTips } from '@/components/safety/safety-tips';
 import { PredictionModel } from '@/components/analysis/prediction-model';
-import { RiskHeatMap } from '@/components/analysis/risk-heatmap';
+
+// Dynamically import components that need window
+const MapComponent = dynamic(
+  () => import('@/components/map/map-component'),
+  { 
+    ssr: false,
+    loading: () => <LoadingSpinner />
+  }
+);
+
+const RiskHeatMap = dynamic(
+  () => import('@/components/analysis/risk-heatmap').then(mod => mod.RiskHeatMap),
+  { 
+    ssr: false,
+    loading: () => <LoadingSpinner />
+  }
+);
 
 export default function Home() {
+  const isReady = useClientSide(false);
   const [earthquakes, setEarthquakes] = useState<Earthquake[]>([]);
   const [stats, setStats] = useState<EarthquakeStats | null>(null);
   const [selectedEarthquake, setSelectedEarthquake] = useState<Earthquake | null>(null);
@@ -48,12 +68,15 @@ export default function Home() {
       });
     };
 
-    // Fetch earthquakes initially and set up polling
     fetchEarthquakes();
-    const intervalId = setInterval(fetchEarthquakes, 60000); // Poll every 60 seconds
+    const intervalId = setInterval(fetchEarthquakes, 60000);
 
-    return () => clearInterval(intervalId); // Cleanup on unmount
+    return () => clearInterval(intervalId);
   }, []);
+
+  if (!isReady) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-6">

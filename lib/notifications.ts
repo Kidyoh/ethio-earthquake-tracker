@@ -1,15 +1,17 @@
 import { ExtendedNotificationOptions } from './types/notifications';
 import { useSettings } from './contexts/settings-context';
 import { Earthquake } from './types';
+import { isClient } from '@/lib/utils/is-client';
 
-export async function requestNotificationPermission() {
+export function requestNotificationPermission() {
+  if (!isClient) return Promise.resolve(false);
+  
   if (!('Notification' in window)) {
-    console.warn('Notifications not supported');
-    return false;
+    return Promise.resolve(false);
   }
 
-  const permission = await Notification.requestPermission();
-  return permission === 'granted';
+  return Notification.requestPermission()
+    .then(permission => permission === 'granted');
 }
 
 export function canSendNotification(earthquake: Earthquake, settings: any) {
