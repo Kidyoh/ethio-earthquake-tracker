@@ -18,7 +18,7 @@ export function Footer() {
         </p>
         <div className="flex space-x-4">
           <a
-            href="https://github.com/kidyoh"
+            href="https://github.com/Kidyoh/ethio-earthquake-tracker"
             target="_blank"
             rel="noreferrer"
             className="flex items-center text-muted-foreground hover:text-primary"
