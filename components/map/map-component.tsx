@@ -9,9 +9,11 @@ import { formatDistanceToNow } from 'date-fns';
 interface MapComponentProps {
   earthquakes: Earthquake[];
   onMarkerClick?: (earthquake: Earthquake) => void;
+  center?: [number, number];
+  zoom?: number;
 }
 
-export default function MapComponent({ earthquakes, onMarkerClick }: MapComponentProps) {
+export default function MapComponent({ earthquakes, onMarkerClick, center, zoom }: MapComponentProps) {
   const markers = useMemo(() => {
     return earthquakes.map((quake) => {
       const radius = Math.pow(2, quake.magnitude) * 1.5;
@@ -47,8 +49,8 @@ export default function MapComponent({ earthquakes, onMarkerClick }: MapComponen
 
   return (
     <MapContainer
-      center={[9.145, 40.489]} // Center of Ethiopia
-      zoom={6}
+      center={center || [9.145, 40.489]} // Center of Ethiopia
+      zoom={zoom || 6}
       className="h-full w-full rounded-lg"
       scrollWheelZoom={true}
     >
