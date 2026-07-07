@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
+import { WatchedRegion } from '@/lib/types';
 
 interface SettingsContextType {
   notifications: boolean;
@@ -8,11 +9,14 @@ interface SettingsContextType {
   minMagnitude: number;
   radius: number;
   location: { lat: number; lng: number } | null;
+  watchedRegions: WatchedRegion[];
   setNotifications: (enabled: boolean) => void;
   setSound: (enabled: boolean) => void;
   setMinMagnitude: (magnitude: number) => void;
   setRadius: (radius: number) => void;
   setLocation: (location: { lat: number; lng: number } | null) => void;
+  addWatchedRegion: (region: Omit<WatchedRegion, 'id'>) => void;
+  removeWatchedRegion: (id: string) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -22,7 +26,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('earthquake-settings');
       if (saved) {
-        return JSON.parse(saved);
+        return { watchedRegions: [], ...JSON.parse(saved) };
       }
     }
     return {
@@ -31,6 +35,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       minMagnitude: 3,
       radius: 100,
       location: null,
+      watchedRegions: [],
     };
   });
 
@@ -50,8 +55,23 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const setRadius = (radius: number) => 
     setSettings((prev: any) => ({ ...prev, radius }));
   
-  const setLocation = (location: { lat: number; lng: number } | null) => 
+  const setLocation = (location: { lat: number; lng: number } | null) =>
     setSettings((prev: any) => ({ ...prev, location }));
+
+  const addWatchedRegion = (region: Omit<WatchedRegion, 'id'>) =>
+    setSettings((prev: any) => ({
+      ...prev,
+      watchedRegions: [
+        ...(prev.watchedRegions ?? []),
+        { ...region, id: Math.random().toString(36).slice(2, 9) },
+      ],
+    }));
+
+  const removeWatchedRegion = (id: string) =>
+    setSettings((prev: any) => ({
+      ...prev,
+      watchedRegions: (prev.watchedRegions ?? []).filter((r: WatchedRegion) => r.id !== id),
+    }));
 
   return (
     <SettingsContext.Provider value={{
@@ -61,6 +81,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       setMinMagnitude,
       setRadius,
       setLocation,
+      addWatchedRegion,
+      removeWatchedRegion,
     }}>
       {children}
     </SettingsContext.Provider>

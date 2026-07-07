@@ -14,6 +14,11 @@ A sophisticated real-time earthquake monitoring and analysis platform specifical
   - Frequency pattern recognition
   - Risk probability calculations
 
+### Trends, Search & Personalized Alerts
+- **Historical Trends Dashboard**: Year-long magnitude trend chart, monthly frequency breakdown, and most active regions
+- **Advanced Search**: Filter earthquakes by date range, magnitude range, and place, with CSV export
+- **Watched Regions**: Save specific places with a custom radius and magnitude threshold, and get a personalized alert feed plus browser notifications when matching earthquakes occur
+
 ### Safety & Education
 - **Comprehensive Guidelines**: Multi-phase safety instructions (before, during, after)
 - **Resource Library**: Technical reports, research papers, and educational materials

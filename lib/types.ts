@@ -72,6 +72,15 @@ export interface User {
   preferences: UserPreferences;
 }
 
+export interface WatchedRegion {
+  id: string;
+  label: string;
+  lat: number;
+  lng: number;
+  radiusKm: number;
+  minMagnitude: number;
+}
+
 export interface UserPreferences {
   notificationEnabled: boolean;
   notificationThreshold: number;

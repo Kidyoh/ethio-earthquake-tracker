@@ -27,6 +27,59 @@ export async function getRecentEarthquakes(days: number = 30, lat?: number, lng?
   return response.json();
 }
 
+export async function getWorldwideEarthquakes(days: number = 30, minMagnitude: number = 2.5) {
+  const startTime = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  const params = new URLSearchParams({
+    format: 'geojson',
+    starttime: startTime,
+    minmagnitude: minMagnitude.toString(),
+  });
+
+  const response = await fetch(`${USGS_API_BASE}?${params}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch earthquake data');
+  }
+
+  return response.json();
+}
+
+export interface EarthquakeSearchFilters {
+  startTime: string;
+  endTime: string;
+  minMagnitude?: number;
+  maxMagnitude?: number;
+  lat?: number;
+  lng?: number;
+  radiusKm?: number;
+}
+
+export async function searchEarthquakes(filters: EarthquakeSearchFilters) {
+  const params = new URLSearchParams({
+    format: 'geojson',
+    starttime: filters.startTime,
+    endtime: filters.endTime,
+    minmagnitude: (filters.minMagnitude ?? 2.5).toString(),
+  });
+
+  if (filters.maxMagnitude !== undefined) {
+    params.append('maxmagnitude', filters.maxMagnitude.toString());
+  }
+
+  const searchLat = filters.lat ?? 9.145;
+  const searchLng = filters.lng ?? 40.489;
+  const searchRadius = filters.radiusKm ?? 1200;
+  params.append('latitude', searchLat.toString());
+  params.append('longitude', searchLng.toString());
+  params.append('maxradiuskm', searchRadius.toString());
+
+  const response = await fetch(`${USGS_API_BASE}?${params}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch earthquake data');
+  }
+
+  return response.json();
+}
+
 export async function getNearbyServices(lat: number, lng: number, type: string) {
   // This would connect to a backend service that maintains emergency service locations
   // For now, return mock data
@@ -43,10 +96,8 @@ export async function submitDamageReport(report: Omit<DamageReport, 'id' | 'time
   };
 }
 
-export const getHistoricalEarthquakes = async () => {
-  const response = await fetch('https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2020-01-01&endtime=2023-01-01');
-  if (!response.ok) {
-    throw new Error('Failed to fetch historical earthquakes');
-  }
-  return response.json();
-};
+export async function getHistoricalEarthquakes(days: number = 365, minMagnitude: number = 2.5) {
+  const endTime = new Date().toISOString();
+  const startTime = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  return searchEarthquakes({ startTime, endTime, minMagnitude });
+}
