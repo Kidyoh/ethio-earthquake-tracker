@@ -10,10 +10,19 @@ interface HistoricalTrendsProps {
   earthquakes: Earthquake[];
 }
 
+const TIMEFRAME_DAYS: Record<string, number> = {
+  week: 7,
+  month: 30,
+  year: 365,
+};
+
 export function HistoricalTrends({ earthquakes }: HistoricalTrendsProps) {
-  const [timeframe, setTimeframe] = useState('week');
+  const [timeframe, setTimeframe] = useState('month');
+
+  const cutoff = Date.now() - TIMEFRAME_DAYS[timeframe] * 24 * 60 * 60 * 1000;
 
   const data = earthquakes
+    .filter(quake => new Date(quake.time).getTime() >= cutoff)
     .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
     .map(quake => ({
       time: new Date(quake.time).toLocaleDateString(),
@@ -36,17 +45,23 @@ export function HistoricalTrends({ earthquakes }: HistoricalTrendsProps) {
         </Select>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="magnitude" stroke="#8884d8" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        {data.length === 0 ? (
+          <div className="flex h-[300px] items-center justify-center text-sm text-muted-foreground">
+            No earthquake data for this timeframe
+          </div>
+        ) : (
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="time" />
+                <YAxis />
+                <Tooltip />
+                <Line type="monotone" dataKey="magnitude" stroke="#8884d8" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

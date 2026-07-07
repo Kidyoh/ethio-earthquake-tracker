@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Menu, Bell, Settings, Map, Info, Shield, AlertTriangle } from 'lucide-react';
+import { Menu, Bell, Settings, Map, Info, Shield, AlertTriangle, TrendingUp, Search, BellRing } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -20,6 +20,9 @@ export default function Navigation() {
 
   const navItems = [
     { href: '/map', label: 'Map View', icon: Map },
+    { href: '/trends', label: 'Trends', icon: TrendingUp },
+    { href: '/search', label: 'Search', icon: Search },
+    { href: '/alerts', label: 'Alerts', icon: BellRing },
     { href: '/education', label: 'Education', icon: Info },
     { href: '/safety', label: 'Safety Guide', icon: Shield },
   ];
